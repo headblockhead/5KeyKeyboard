@@ -131,49 +131,39 @@ def runScript(file):
         print("Unable to open file ", file)
 
 
+KeyPin0 = digitalio.DigitalInOut(GP0)
+KeyPin0.switch_to_input(pull=digitalio.Pull.DOWN)
+
+KeyPin1 = digitalio.DigitalInOut(GP1)
+KeyPin1.switch_to_input(pull=digitalio.Pull.DOWN)
+
+KeyPin2 = digitalio.DigitalInOut(GP2)
+KeyPin2.switch_to_input(pull=digitalio.Pull.DOWN)
+
+KeyPin3 = digitalio.DigitalInOut(GP3)
+KeyPin3.switch_to_input(pull=digitalio.Pull.DOWN)
+
+KeyPin4 = digitalio.DigitalInOut(GP4)
+KeyPin4.switch_to_input(pull=digitalio.Pull.DOWN)
+
+
 def getKeyStatus(keynum):
     if (keynum == 0):
-        keyStatusPin = digitalio.DigitalInOut(GP0)
-        keyStatusPin.switch_to_input(pull=digitalio.Pull.UP)
-        keyStatus = not keyStatusPin.value
+        keyStatus = KeyPin0.value
         return(keyStatus)
     if (keynum == 1):
-        keyStatusPin = digitalio.DigitalInOut(GP1)
-        keyStatusPin.switch_to_input(pull=digitalio.Pull.UP)
-        keyStatus = not keyStatusPin.value
+        keyStatus = KeyPin1.value
         return(keyStatus)
     if (keynum == 2):
-        keyStatusPin = digitalio.DigitalInOut(GP2)
-        keyStatusPin.switch_to_input(pull=digitalio.Pull.UP)
-        keyStatus = not keyStatusPin.value
+        keyStatus = KeyPin2.value
         return(keyStatus)
     if (keynum == 3):
-        keyStatusPin = digitalio.DigitalInOut(GP3)
-        keyStatusPin.switch_to_input(pull=digitalio.Pull.UP)
-        keyStatus = not keyStatusPin.value
+        keyStatus = KeyPin3.value
         return(keyStatus)
     if (keynum == 4):
-        keyStatusPin = digitalio.DigitalInOut(GP4)
-        keyStatusPin.switch_to_input(pull=digitalio.Pull.UP)
-        keyStatus = not keyStatusPin.value
+        keyStatus = KeyPin4.value
         return(keyStatus)
     return(False)
-
-
-def getSwitchStatus():
-    switchStatusDownPin = digitalio.DigitalInOut(GP6)
-    switchStatusDownPin.switch_to_input(pull=digitalio.Pull.UP)
-    switchStatusDown = not switchStatusDownPin.value
-
-    switchStatusUpPin = digitalio.DigitalInOut(GP6)
-    switchStatusUpPin.switch_to_input(pull=digitalio.Pull.UP)
-    switchStatusUp = not switchStatusUpPin.value
-    if (not (switchStatusDown and switchStatusUp)):
-        return(2)
-    if (switchStatusDown):
-        return(3)
-    if (switchStatusUp):
-        return(1)
 
 
 def selectPayload():
@@ -182,40 +172,23 @@ def selectPayload():
     keystatus3 = getKeyStatus(2)
     keystatus4 = getKeyStatus(3)
     keystatus5 = getKeyStatus(4)
-    mode = getSwitchStatus()
-    if (mode == 1):
-        if(keystatus1 == True):
-            payload = "key1a.dd"
-        elif(keystatus2 == True):
-            payload = "key2a.dd"
-        elif(keystatus3 == True):
-            payload = "key3a.dd"
-        elif(keystatus4 == True):
-            payload = "key4a.dd"
-        elif(keystatus5 == True):
-            payload = "key5a.dd"
-        else:
-            return False
-    if (mode == 2):
+
+    if(keystatus1 == True):
+        payload = "button1.dd"
+    elif(keystatus2 == True):
+        payload = "button2.dd"
+    elif(keystatus3 == True):
+        payload = "button3.dd"
+    elif(keystatus4 == True):
+        payload = "button4.dd"
+    elif(keystatus5 == True):
+        payload = "button5.dd"
+    else:
         return False
-    if (mode == 3):
-        if(keystatus1 == True):
-            payload = "key1b.dd"
-        elif(keystatus2 == True):
-            payload = "key2b.dd"
-        elif(keystatus3 == True):
-            payload = "key3b.dd"
-        elif(keystatus4 == True):
-            payload = "key4b.dd"
-        elif(keystatus5 == True):
-            payload = "key5b.dd"
-        else:
-            return False
     return payload
 
 
-runScript("key1a.dd")
-
+# runScript("button1.dd")
 while True:
     payload = selectPayload()
     if (payload != False):
