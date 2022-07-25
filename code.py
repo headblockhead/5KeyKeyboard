@@ -16,10 +16,12 @@ from board import *
 import pwmio
 import board
 
+from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
 
 defaultDelay = 0
 
+consumer_control = ConsumerControl(usb_hid.devices)
 kbd = Keyboard(usb_hid.devices)
 layout = KeyboardLayout(kbd)
 
@@ -32,10 +34,10 @@ duckyMediaCommands = {
     "PLAY_PAUSE": ConsumerControlCode.PLAY_PAUSE,
     "STOP": ConsumerControlCode.STOP,
     "MUTE": ConsumerControlCode.MUTE,
-    "VOLUME_INCREMENT": ConsumerControlCode.VOLUME_UP,
-    "VOLUME_DECREMENT": ConsumerControlCode.VOLUME_DOWN,
-    "SCAN_NEXT_TRACK": ConsumerControlCode.NEXT,
-    "SCAN_PREVIOUS_TRACK": ConsumerControlCode.PREVIOUS,
+    "VOLUME_INCREMENT": ConsumerControlCode.VOLUME_INCREMENT,
+    "VOLUME_DECREMENT": ConsumerControlCode.VOLUME_DECREMENT,
+    "SCAN_NEXT_TRACK": ConsumerControlCode.SCAN_NEXT_TRACK,
+    "SCAN_PREVIOUS_TRACK": ConsumerControlCode.SCAN_PREVIOUS_TRACK,
     "REWIND": ConsumerControlCode.REWIND,
     "FAST_FORWARD": ConsumerControlCode.FAST_FORWARD,
     "EJECT": ConsumerControlCode.EJECT,
@@ -77,12 +79,13 @@ def convertLine(line):
 
 def runScriptLine(line):
     for k in line:
-        if k in duckyMediaCommands.values():
+        if k in duckyMediaCommands.values() and not k in duckyCommands.values():
             # if k is in the media commands list, use consumer_control.send to send it
             consumer_control.send(k)
         else:
             # otherwise, use kbd.press to press it
             kbd.press(k)
+    consumer_control.release()
     kbd.release_all()
 
 
@@ -204,3 +207,5 @@ while True:
     payload = selectPayload()
     if (payload != False):
         runScript(payload)
+        # Wait 200ms before checking again
+        time.sleep(0.2)
